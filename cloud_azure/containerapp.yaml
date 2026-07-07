@@ -1,0 +1,31 @@
+type: Microsoft.App/containerApps
+apiVersion: "2023-05-01"
+name: rag-qas-ui
+resourceGroup: rg-rag-project
+location: eastus
+properties:
+  environmentId: /subscriptions/9e328067-2362-4b26-afd0-42b89ccfe183/resourceGroups/rg-rag-project/providers/Microsoft.App/managedEnvironments/env-rag-project
+  configuration:
+    activeRevisionsMode: Single
+    ingress:
+      external: true
+      targetPort: 8501
+      transport: auto
+      allowInsecure: false
+    secrets:
+      - name: groq-api-key
+        value: "YOUR_GROQ_API_KEY_PLACEHOLDER"
+  template:
+    containers:
+      - image: docker.io/kishansinha2207/rag-app:latest
+        name: rag-qas-ui
+        env:
+          - name: GROQ_API_KEY
+            secretRef: groq-api-key
+        volumeMounts:
+          - volumeName: rag-volume
+            mountPath: /app/data
+    volumes:
+      - name: rag-volume
+        storageType: AzureFile
+        storageName: rag-storage-link
